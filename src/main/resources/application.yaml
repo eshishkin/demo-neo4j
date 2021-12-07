@@ -1,1 +1,30 @@
+spring:
+  neo4j.uri: bolt://localhost:7687
+  neo4j.database: test
 
+
+logging:
+  pattern.console: '[%date{"yyyy-MM-dd''T''HH:mm:ss,SSSXXX"}] [%thread] %level %logger - %msg%n'
+
+logging.level:
+  org.springframework.data.neo4j: DEBUG
+
+management:
+  endpoints:
+    web.base-path: /admin
+    web.exposure.include: health,info,env,prometheus,metrics,startup,caches,beans
+  endpoint:
+    metrics.enabled: true
+    export.prometheus.enabled: true
+  prometheus:
+    enabled: true
+  health:
+    livenessstate.enabled: true
+    readinessstate.enabled: true
+    show-details: always
+    show-components: always
+    probes.enabled: true
+    group:
+      readiness.include: neo4j
+      readiness.show-components: always
+      readiness.show-details: always
