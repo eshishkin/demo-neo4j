@@ -1,9 +1,9 @@
 version: "2"
 
 services:
-  neoj4:
+  neo4j:
     image: neo4j:4.3.7
-#    mem_limit: 500m
+    mem_limit: 1500m
     environment:
       - NEO4J_AUTH=none
     ports:
@@ -13,6 +13,37 @@ services:
       backend:
         aliases:
           - neo4j
+
+  mysql:
+    image: mysql
+    environment:
+      - NEO4J_AUTH=none
+    ports:
+      - "3306:3306"
+    networks:
+      backend:
+        aliases:
+          - mysql
+
+  neo4j-service:
+    image: eshishkin/demo/neo4j
+    mem_limit: 650m
+    cpus: 1
+    depends_on:
+      - neo4j
+    expose:
+      - "8080"
+    ports:
+      - "18080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xss512k -Xmx128m -XX:MaxMetaspaceSize=100M -XX:ReservedCodeCacheSize=60M -XX:+UseContainerSupport -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch
+    command: [
+               "--spring.profiles.active=neo4j"
+    ]
+    networks:
+      backend:
+        aliases:
+          - neo4j-service
 
 networks:
   backend:
