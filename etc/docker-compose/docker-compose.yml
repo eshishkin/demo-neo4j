@@ -28,7 +28,27 @@ services:
         aliases:
           - postgres
 
-  neo4j-service:
+  neo4j-service-first:
+    image: eshishkin/demo/neo4j
+    mem_limit: 650m
+    cpus: 1
+    depends_on:
+      - neo4j
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xss512k -Xmx128m -XX:MaxMetaspaceSize=100M -XX:ReservedCodeCacheSize=60M -XX:+UseContainerSupport -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch
+    command: [
+               "--spring.profiles.active=neo4j"
+    ]
+    networks:
+      backend:
+        aliases:
+          - neo4j-service-first
+
+  neo4j-service-second:
     image: eshishkin/demo/neo4j
     mem_limit: 650m
     cpus: 1
@@ -41,12 +61,12 @@ services:
     environment:
       - JAVA_TOOL_OPTIONS=-Xms128m -Xss512k -Xmx128m -XX:MaxMetaspaceSize=100M -XX:ReservedCodeCacheSize=60M -XX:+UseContainerSupport -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch
     command: [
-               "--spring.profiles.active=neo4j"
+        "--spring.profiles.active=neo4j"
     ]
     networks:
       backend:
         aliases:
-          - neo4j-service
+          - neo4j-service-second
 
   postgres-service:
     image: eshishkin/demo/neo4j
@@ -67,6 +87,57 @@ services:
       backend:
         aliases:
           - postgres-service
+
+
+  prometheus:
+    image: prom/prometheus:latest
+    cpus: 0.15
+    volumes:
+      - ./prometheus/config.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus/data
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+    networks:
+      backend:
+        aliases:
+          - prometheus
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    cpus: 0.25
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 38080:8080
+    command: [
+        '--housekeeping_interval=1s',
+        '--store_container_labels=false'
+      #        '-docker_only=false'
+    ]
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:7.1.5
+    cpus: 0.15
+    ports:
+      - 3000:3000
+    command: "--config=/etc/grafana/custom/custom.ini"
+    depends_on:
+      - cadvisor
+      - prometheus
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/settings:/etc/grafana/custom
+    networks:
+      - backend
 
 networks:
   backend:
