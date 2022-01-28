@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+
+    <changeSet id="person.schema" author="eshishkin">
+        <comment>Create table for persons</comment>
+        <createTable tableName="person">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="movie.schema" author="eshishkin">
+        <comment>Create table for movies</comment>
+        <createTable tableName="movie">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="roles.schema" author="eshishkin">
+        <comment>Create link table</comment>
+        <createTable tableName="roles">
+            <column name="person_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="movie_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="roles"
+                                 baseColumnNames="person_id"
+                                 constraintName="roles_person_id_fk"
+                                 referencedTableName="person"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="roles"
+                                 baseColumnNames="movie_id"
+                                 constraintName="roles_movie_id_fk"
+                                 referencedTableName="movie"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

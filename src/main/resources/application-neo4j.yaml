@@ -13,3 +13,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/database/neo4j/changes.xml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+
+logging.level:
+  org.springframework.data.neo4j: DEBUG

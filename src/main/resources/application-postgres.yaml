@@ -1,0 +1,16 @@
+spring:
+  profiles: postgres
+  r2dbc.url: r2dbc:postgres://postgres:5432/test
+  r2dbc.username: test
+  r2dbc.password: test
+  liquibase:
+    enabled: true
+    url: jdbc:postgresql://postgres:5432/test
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
+    change-log: classpath:/database/postgres/changes.xml
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
+
+logging.level:
+  org.springframework.r2dbc: DEBUG

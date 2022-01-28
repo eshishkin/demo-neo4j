@@ -14,6 +14,8 @@ public interface PersonRepository extends ReactiveNeo4jRepository<Person, Long> 
             "MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)<-[r2:ACTED_IN]-(p2:Person) "
                     + "WHERE p.id = $id "
                     + "RETURN p2"
+                    + "LIMIT $limit"
+
     )
-    Flux<Person> findRelatedActors(Long id);
+    Flux<Person> findRelatedActors(Long id, Long limit);
 }

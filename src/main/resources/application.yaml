@@ -4,9 +4,6 @@ spring:
 logging:
   pattern.console: '[%date{"yyyy-MM-dd''T''HH:mm:ss,SSSXXX"}] [%thread] %level %logger - %msg%n'
 
-logging.level:
-  org.springframework.data.neo4j: DEBUG
-
 management:
   endpoints:
     web.base-path: /admin
@@ -23,29 +20,5 @@ management:
     show-components: always
     probes.enabled: true
     group:
-      readiness.include: neo4j
       readiness.show-components: always
       readiness.show-details: always
-#
-#
-#spring:
-#  neo4j.uri: bolt://localhost:7687
-#  neo4j.database: test
-#  health:
-#    group:
-#      readiness.include: neo4j
-#  datasource:
-#    driver-class-name: org.neo4j.jdbc.bolt.BoltDriver
-#    url: jdbc:neo4j:${spring.neo4j.uri}
-#    username: ${spring.neo4j.authentication.username}
-#    password: ${spring.neo4j.authentication.password}
-#  liquibase:
-#    change-log: classpath:/database/neo4j/changes.xml
-#
-#
-#
-#
-#
-#
-##  url: jdbc:neo4j:bolt://neo4j:7687
-##  change-log: classpath:/database/neo4j/changes.xml

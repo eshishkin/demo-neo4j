@@ -4,9 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
 
     <changeSet id="person_id_idx" author="eshishkin">
-        <comment>Create index for person_id</comment>
+        <comment>Create index for person_id and movie_id</comment>
         <sql>
-            CREATE INDEX person_id_idx IF NOT EXISTS FOR (n:Person) ON (n.id)
+            CREATE INDEX person_id_idx IF NOT EXISTS FOR (n:Person) ON (n.id);
+            CREATE INDEX movie_id_idx IF NOT EXISTS FOR (n:Movie) ON (n.id);
         </sql>
     </changeSet>
 </databaseChangeLog>

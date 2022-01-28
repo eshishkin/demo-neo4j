@@ -6,6 +6,7 @@ services:
     mem_limit: 1500m
     environment:
       - NEO4J_AUTH=none
+      - NEO4JLABS_PLUGINS=["apoc", "graph-data-science"]
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -14,16 +15,18 @@ services:
         aliases:
           - neo4j
 
-  mysql:
-    image: mysql
+  postgres:
+    image: postgres:14
     environment:
-      - NEO4J_AUTH=none
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks:
       backend:
         aliases:
-          - mysql
+          - postgres
 
   neo4j-service:
     image: eshishkin/demo/neo4j
@@ -44,6 +47,26 @@ services:
       backend:
         aliases:
           - neo4j-service
+
+  postgres-service:
+    image: eshishkin/demo/neo4j
+    mem_limit: 650m
+    cpus: 1
+    depends_on:
+      - postgres
+    expose:
+      - "8080"
+    ports:
+      - "28080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-Xms128m -Xss512k -Xmx128m -XX:MaxMetaspaceSize=100M -XX:ReservedCodeCacheSize=60M -XX:+UseContainerSupport -XX:+AlwaysActAsServerClassMachine -XX:+AlwaysPreTouch
+    command: [
+        "--spring.profiles.active=postgres",
+    ]
+    networks:
+      backend:
+        aliases:
+          - postgres-service
 
 networks:
   backend:
