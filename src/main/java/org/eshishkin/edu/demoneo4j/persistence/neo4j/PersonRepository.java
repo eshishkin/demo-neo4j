@@ -13,7 +13,7 @@ public interface PersonRepository extends ReactiveNeo4jRepository<Person, Long> 
     @Query(value =
             "MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)<-[r2:ACTED_IN]-(p2:Person) "
                     + "WHERE p.id = $id "
-                    + "RETURN p2"
+                    + "RETURN DISTINCT p2 "
                     + "LIMIT $limit"
 
     )
