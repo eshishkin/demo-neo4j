@@ -51,7 +51,7 @@ public class PersonController {
                     );
                     return reactiveNeo4jClient
                             .query(String.format(
-                                    "call apoc.periodic.iterate(\"%s\", \"%s\", {batchSize:5, parallel:true})",
+                                    "call apoc.periodic.iterate(\"%s\", \"%s\", {batchSize:2000, parallel:true})",
                                     generator, query
                             ))
                             .run()

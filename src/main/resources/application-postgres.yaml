@@ -13,4 +13,4 @@ spring:
     exclude: org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration
 
 logging.level:
-  org.springframework.r2dbc: DEBUG
+  org.springframework.r2dbc: INFO

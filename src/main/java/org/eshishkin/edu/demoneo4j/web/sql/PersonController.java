@@ -7,6 +7,7 @@ import org.eshishkin.edu.demoneo4j.model.sql.Person;
 import org.eshishkin.edu.demoneo4j.persistence.sql.PersonRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -61,19 +63,22 @@ public class PersonController {
                 .then(Mono.defer(() -> mov))
                 .then(Mono.defer(() -> {
                     var insert = "INSERT INTO roles(person_id, movie_id) VALUES ";
-                    var values = IntStream.range(1, actors)
-                            .boxed()
-                            .flatMap(personId -> {
+                    return Flux.range(1, actors)
+                            .map(personId -> {
                                 return IntStream.range(1, personId % movies + 1)
-                                        .mapToObj(id -> String.format("(%s, %s)", personId, id));
+                                        .mapToObj(id -> String.format("(%s, %s)", personId, id))
+                                        .collect(Collectors.joining(", "));
                             })
-                            .collect(Collectors.joining(", "));
-
-                    return rd2dbcTemplate.getDatabaseClient()
-                            .sql(insert + values)
-                            .fetch()
-                            .rowsUpdated()
-                            .doOnNext(updated -> log.info("Relationships created: {}", updated))
+                            .filter(StringUtils::hasText)
+                            .buffer(20)
+                            .flatMap(values -> {
+                                var value = String.join(", ", values);
+                                    return rd2dbcTemplate.getDatabaseClient()
+                                            .sql(insert + value)
+                                            .fetch()
+                                            .rowsUpdated()
+                                            .doOnNext(updated -> log.info("Relationships created: {}", updated));
+                            })
                             .then();
                 }));
     }
@@ -81,6 +86,8 @@ public class PersonController {
     @GetMapping("/linked")
     public Flux<Person> getRelatedPersons(@RequestParam(name = "userId") Long userId,
                                           @RequestParam(name = "limit") Long limit) {
-        return personRepository.findRelatedActors(userId, limit);
+        return personRepository
+                .findRelatedActors(userId, limit)
+                .filter(p -> !Objects.equals(userId, p.getId()));
     }
 }

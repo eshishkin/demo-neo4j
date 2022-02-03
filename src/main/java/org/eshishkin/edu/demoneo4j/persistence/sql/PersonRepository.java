@@ -13,7 +13,7 @@ public interface PersonRepository extends R2dbcRepository<Person, Long> {
     @Query(value =
             "SELECT * from person as p " +
             "INNER JOIN roles as r ON r.person_id = p.id " +
-            "WHERE p.id <> :id AND r.movie_id in (" +
+            "WHERE r.movie_id in (" +
             "   SELECT rr.movie_id FROM roles as rr WHERE rr.person_id = :id" +
             ") " +
             "LIMIT :limit"

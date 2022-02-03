@@ -46,6 +46,14 @@
                                  constraintName="roles_movie_id_fk"
                                  referencedTableName="movie"
                                  referencedColumnNames="id"/>
+
+        <createIndex tableName="roles" indexName="roles_person_idx">
+            <column name="person_id"/>
+        </createIndex>
+
+        <createIndex tableName="roles" indexName="roles_movie_idx">
+            <column name="movie_id"/>
+        </createIndex>
     </changeSet>
 
 </databaseChangeLog>
